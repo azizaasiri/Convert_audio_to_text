@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>تحويل الصوت إلى نص</title>
+  <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+</head>
+<body>
+  <h1>تحويل الصوت إلى نص</h1>
+  <button onclick="startRecording()">ابدأ التسجيل</button>
+  <button onclick="stopRecording()">قفل التسجيل</button>
+  <div id="output"></div>
+
+  <script>
+    let recognition;
+    let outputDiv = document.getElementById('output');
+
+    function startRecording() {
+      recognition = new webkitSpeechRecognition();
+      recognition.lang = 'ar-AR'; // اللغة المستخدمة (يمكن تغييرها حسب الحاجة)
+      recognition.start();
+      
+      recognition.onresult = function(event) {
+        let speechToText = event.results[0][0].transcript;
+        outputDiv.innerHTML = speechToText;
+
+        // إرسال قيمة النص إلى الخادم باستخدام AJAX
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', 'save.php', true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send('text=' + encodeURIComponent(speechToText));
+      };
+    }
+
+    function stopRecording() {
+      recognition.stop();
+    }
+  </script>
+</body>
+</html>
